@@ -1,6 +1,14 @@
 <?php
 /**
- * All-in Signing Service ModuleInterface
+ * @version        1.0.0
+ * @package        SetaPDF_Signer_Signature_Module_AIS
+ * @copyright      Copyright (C) 2014. All rights reserved.
+ * @license        GNU General Public License version 2 or later; see LICENSE.md
+ * @author         Swisscom (Schweiz) AG
+ * Requirements    AllinSigningService (ais.php 1.0.0)
+ *                 SetaPDF-Signer (Version 2.1.0.x)
+ *
+ * Open Issues     Support for Timestamp only signatures
  */
 
 require_once dirname(__FILE__) . '/ais.php';
@@ -22,10 +30,10 @@ class SetaPDF_Signer_Signature_Module_AIS implements SetaPDF_Signer_Signature_Mo
 
     /**
      * AIS Signature Module class
-     * #params     string    Customer ID provided by Swisscom
-     * #params     string    Certificate/key that is allowed to access the service
-     * #params     string    Location of Certificate Authority file which should be used to authenticate the identity of the remote peer
-     * #params     array     Additional SOAP client options
+     * #params     string    (optional) Customer ID provided by Swisscom
+     * #params     string    (optional) Certificate/key that is allowed to access the service
+     * #params     string    (optional) Location of Certificate Authority file which should be used to authenticate the identity of the remote peer
+     * #params     array     (optional) Additional SOAP client options
      * @return     null
      */
     public function __construct($customerID='', $cert='', $cafile='', $myOpts = null) {
@@ -41,15 +49,31 @@ class SetaPDF_Signer_Signature_Module_AIS implements SetaPDF_Signer_Signature_Mo
         $this->signerMIDSN = '';
     }
 
+    /**
+     * setCustomerID - Defines the customer identification
+     * #params     string    Customer ID provided by Swisscom
+     */
     public function setCustomerID($customerID) {
         $this->customerID = (string)$customerID;
     }
 
+    /**
+     * setSSLOptions - Defines the SSL identification options
+     * #params     string    Certificate/key that is allowed to access the service
+     * #params     string    Location of CA file which should be used to authenticate the identity of the remote peer
+     */
     public function setSSLOptions($certandkey, $ca_ssl) {
         $this->certandkey = (string)$certandkey;
         $this->ca_ssl = (string)$ca_ssl;
     }
 
+    /**
+     * setOnDemandOptions - Defines the OnDemand and optional step up values
+     * #params     string    Distiuished Name (DN)
+     * #params     string    (optional) Mobile ID Number for step up verification
+     * #params     string    (optional) Mobile ID Message
+     * #params     string    (optional) Mobile ID Language
+     */
     public function setOnDemandOptions($DN, $msisdn='', $msg='', $lang='') {
         $this->DN = (string)$DN;
         $this->msisdn = (string)$msisdn;
@@ -57,6 +81,10 @@ class SetaPDF_Signer_Signature_Module_AIS implements SetaPDF_Signer_Signature_Mo
         $this->lang = (string)$lang;
     }
     
+    /**
+     * setDigestAlgo - Defines the dighest method to be used (Default is SHA-256)
+     * #params     string    Type ('SHA-256', 'SHA-384', 'SHA-512')
+     */
     public function setDigestAlgo($algo) {
         $algo = strtoupper((string)$algo);
         switch ($algo) {
@@ -75,6 +103,11 @@ class SetaPDF_Signer_Signature_Module_AIS implements SetaPDF_Signer_Signature_Mo
         }
     }
 
+    /**
+     * createSignature - Creates a PADES signature over AIS for the given file including a Timestamp
+     * #params     string    File to be signed
+     * @return     string    CMS signature
+     */
     public function createSignature($tmpPath) {
         $this->signerSubject = '';
         $this->signerMIDSN = '';
@@ -102,10 +135,18 @@ class SetaPDF_Signer_Signature_Module_AIS implements SetaPDF_Signer_Signature_Mo
         return(base64_decode($ais->getLastSignature()));
     }
     
+    /**
+     * getSignerSubject - Returns signature subject for the last request
+     * @return     string
+     */
     public function getSignerSubject() {
         return($this->signerSubject);
     }
 
+    /**
+     * getSignerMIDSN - Returns Mobile ID Serialnumber of the DN related to last signature
+     * @return     string
+     */
     public function getSignerMIDSN() {
         return($this->signerMIDSN);
     }
