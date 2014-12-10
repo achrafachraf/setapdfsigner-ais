@@ -26,7 +26,7 @@ $signer_location = 'Zürich';
 $signer_reason   = 'I agree to the terms and condidtions in this document';
 
 // Optional step up
-$approval_no     = '+41791234567';		// Set to empty for no step up authentication
+$approval_no     = '+41791234567';      // Set to empty for no step up authentication
 $approval_lang   = 'en';
 $approval_msg    = 'Do you want to sign ' . $filename_in . ' as ' . $signer_mail . '?';
 
@@ -60,7 +60,7 @@ try {
     echo("Mobile ID: " . $module->getSignerMIDSN() . PHP_EOL);
 } catch (SetaPDF_Exception $e) {
     // SetaPDF specific error
-	echo 'Error in Core: ' . $e->getMessage() . ' with code ' . $e->getCode();
+    echo 'Error in Core: ' . $e->getMessage() . ' with code ' . $e->getCode();
 } catch (Exception $e) {
     // global exception handling
 }

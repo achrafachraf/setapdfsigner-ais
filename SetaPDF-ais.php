@@ -42,21 +42,21 @@ class SetaPDF_Signer_Signature_Module_AIS implements SetaPDF_Signer_Signature_Mo
     }
 
     public function setCustomerID($customerID) {
-	    $this->customerID = (string)$customerID;
+        $this->customerID = (string)$customerID;
     }
 
     public function setSSLOptions($certandkey, $ca_ssl) {
-	    $this->certandkey = (string)$certandkey;
-	    $this->ca_ssl = (string)$ca_ssl;
+        $this->certandkey = (string)$certandkey;
+        $this->ca_ssl = (string)$ca_ssl;
     }
 
     public function setOnDemandOptions($DN, $msisdn='', $msg='', $lang='') {
-	    $this->DN = (string)$DN;
-	    $this->msisdn = (string)$msisdn;
-	    $this->msg = (string)$msg;
-	    $this->lang = (string)$lang;
+        $this->DN = (string)$DN;
+        $this->msisdn = (string)$msisdn;
+        $this->msg = (string)$msg;
+        $this->lang = (string)$lang;
     }
-	
+    
     public function setDigestAlgo($algo) {
         $algo = strtoupper((string)$algo);
         switch ($algo) {
@@ -77,34 +77,34 @@ class SetaPDF_Signer_Signature_Module_AIS implements SetaPDF_Signer_Signature_Mo
 
     public function createSignature($tmpPath) {
         $this->signerSubject = '';
-	    $this->signerMIDSN = '';
-		$digestValue = hash_file($this->digestAlgo, $tmpPath, true);
+        $this->signerMIDSN = '';
+        $digestValue = hash_file($this->digestAlgo, $tmpPath, true);
 
-		$ais = new AllinSigningService($this->customerID, $this->certandkey, $this->ca_ssl, $this->ais_options);
-		$ais->addRevocationInformation('PADES');
+        $ais = new AllinSigningService($this->customerID, $this->certandkey, $this->ca_ssl, $this->ais_options);
+        $ais->addRevocationInformation('PADES');
         $ais->addTimeStamp(true);
-	
+    
         $ok = $ais->sign($digestValue, $this->digestMethod, $this->DN, $this->msisdn, $this->msg, $this->lang);
-		if (! $ok) {
-			$error = 'Module_AIS#' . (string)$ais->resultmajor . '::' . (string)$ais->resultminor;
-			$errorMobileID = preg_replace('/^mss:_/', '', $ais->resultmessage);
-			switch ($error) {
-				case 'Module_AIS#HTTP::Could not connect to host':
+        if (! $ok) {
+            $error = 'Module_AIS#' . (string)$ais->resultmajor . '::' . (string)$ais->resultminor;
+            $errorMobileID = preg_replace('/^mss:_/', '', $ais->resultmessage);
+            switch ($error) {
+                case 'Module_AIS#HTTP::Could not connect to host':
                     throw new SetaPDF_Signer_Exception($error, 1);
                 case 'Module_AIS#http://ais.swisscom.ch/1.0/resultmajor/SubsystemError::http://ais.swisscom.ch/1.0/resultminor/subsystem/MobileID/service':
                     throw new SetaPDF_Signer_Exception('ModuleAIS#MobileID', (integer)$errorMobileID);
-				default:
+                default:
                     throw new SetaPDF_Signer_Exception($error, -1);
             }
         }
         $this->signerSubject = $ais->sig_certSubject;
         $this->signerMIDSN = $ais->sig_certMIDSN;
-		return(base64_decode($ais->getLastSignature()));
-	}
-	
+        return(base64_decode($ais->getLastSignature()));
+    }
+    
     public function getSignerSubject() {
-	    return($this->signerSubject);
-	}
+        return($this->signerSubject);
+    }
 
     public function getSignerMIDSN() {
         return($this->signerMIDSN);

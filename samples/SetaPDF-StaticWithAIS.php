@@ -42,7 +42,7 @@ try {
     echo("Signed by: " . $module->getSignerSubject() . PHP_EOL);
 } catch (SetaPDF_Exception $e) {
     // SetaPDF specific error
-	echo 'Error in Core: ' . $e->getMessage() . ' with code ' . $e->getCode();
+    echo 'Error in Core: ' . $e->getMessage() . ' with code ' . $e->getCode();
 } catch (Exception $e) {
     // global exception handling
 }
