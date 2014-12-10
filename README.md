@@ -47,10 +47,27 @@ Refer to the SoapClient::SoapClient options on http://www.php.net/manual/en/soap
 
 ## Usage
 
-Sample use:
+````
+...
+// Reserve more space than default
+$signer->setSignatureContentLength(32000);
+$signer->setAllowSignatureContentLengthChange(false);
+
+// Sign the document with the use of the module
+$module = new SetaPDF_Signer_Signature_Module_AIS();
+$module->setCustomerID($ais_customer);
+$module->setSSLOptions(dirname(__FILE__).'/mycertandkey.crt', dirname(__FILE__).'/ais-ca-ssl.crt');
+...
+$signer->sign($module);
+...
+````
+
+Samples:
 
 * Static Signature [samples/SetaPDF-StaticWithAIS.php](samples/SetaPDF-StaticWithAIS.php)
 * OnDemand Signature [samples/SetaPDF-OnDemandWithAIS.php](samples/SetaPDF-OnDemandWithAIS.php)
+
+
 
 ## Known issues
 

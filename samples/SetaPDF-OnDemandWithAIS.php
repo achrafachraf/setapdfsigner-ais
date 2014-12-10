@@ -8,8 +8,8 @@ date_default_timezone_set('Europe/Berlin');
 error_reporting(E_ALL | E_STRICT);
 
 // load and register the autoload function
-require_once('library/SetaPDF/Autoload.php');
-require_once("SetaPDF-ais.php");
+require_once('../library/SetaPDF/Autoload.php');
+require_once("../SetaPDF-ais.php");
 
 // Configure the temporary writer
 SetaPDF_Core_Writer_TempFile::setTempDir(sys_get_temp_dir());
@@ -26,7 +26,7 @@ $signer_location = 'Zürich';
 $signer_reason   = 'I agree to the terms and condidtions in this document';
 
 // Optional step up
-$approval_no     = '+41791234567';		// Set to empty for no step up
+$approval_no     = '+41791234567';		// Set to empty for no step up authentication
 $approval_lang   = 'en';
 $approval_msg    = 'Do you want to sign ' . $filename_in . ' as ' . $signer_mail . '?';
 
@@ -47,7 +47,7 @@ $signer->setAllowSignatureContentLengthChange(false);
 // Sign the document with the use of the module
 $module = new SetaPDF_Signer_Signature_Module_AIS();
 $module->setCustomerID($ais_customer);
-$module->setSSLOptions(dirname(__FILE__).'/mycertandkey.crt', dirname(__FILE__).'/ais-ca-ssl.crt');
+$module->setSSLOptions(dirname(__FILE__).'/../mycertandkey.crt', dirname(__FILE__).'/../ais-ca-ssl.crt');
 
 // Signature type and proper OnDemand options
 $module->setOnDemandOptions($signer_dn);
