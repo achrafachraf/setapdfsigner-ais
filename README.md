@@ -48,6 +48,9 @@ Refer to the SoapClient::SoapClient options on http://www.php.net/manual/en/soap
 ## Usage
 
 ````
+// load and register the autoload function
+require_once('library/SetaPDF/Autoload.php');
+require_once("SetaPDF-ais.php");
 ...
 // Reserve more space than default
 $signer->setSignatureContentLength(32000);
