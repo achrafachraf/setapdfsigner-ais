@@ -1,6 +1,6 @@
 <?php
 /**
- * @version        1.0.0
+ * @version        1.0.1
  * @package        SetaPDF_Signer_Signature_Module_AIS
  * @copyright      Copyright (C) 2014. All rights reserved.
  * @license        GNU General Public License version 2 or later; see LICENSE.md
@@ -8,7 +8,7 @@
  * Requirements    AllinSigningService (ais.php 1.0.0)
  *                 SetaPDF-Signer (Version 2.1.0.x)
  *
- * Open Issues     Support for Timestamp only signatures
+ * Open Issues     LTV support for timestamp signatures
  */
 
 require_once dirname(__FILE__) . '/ais.php';
@@ -149,6 +149,86 @@ class SetaPDF_Signer_Signature_Module_AIS implements SetaPDF_Signer_Signature_Mo
      */
     public function getSignerMIDSN() {
         return($this->signerMIDSN);
+    }
+
+}
+
+class SetaPDF_Signer_Timestamp_Module_AIS implements SetaPDF_Signer_Timestamp_Module_ModuleInterface {
+    private $customerID;                    // CustomerID provided by Swisscom
+    private $certandkey;                    // Certificate/key that is allowed to access the service
+    private $ca_ssl;                        // Location of Certificate Authority file which should be used to authenticate the identity of the remote peer
+    private $ais_options;                   // Additional SOAP client options
+    private $digestAlgo;
+    private $digestMethod;
+    private $signerSubject;                 // Signer: Subject
+
+    /**
+     * AIS Signature Module class
+     * #params     string    Customer ID provided by Swisscom
+     * #params     string    Certificate/key that is allowed to access the service
+     * #params     string    Location of Certificate Authority file which should be used to authenticate the identity of the remote peer
+     * #params     array     Additional SOAP client options
+     * @return     null
+     */
+    public function __construct($customerID='', $cert='', $cafile='', $myOpts = null) {
+        $this->setCustomerID($customerID);
+        $this->setSSLOptions($cert, $cafile);
+        $this->ais_options = $myOpts;
+        $this->setDigestAlgo('sha256');
+        $this->signerSubject = '';
+    }
+
+    public function setCustomerID($customerID) {
+        $this->customerID = (string)$customerID;
+    }
+
+    public function setSSLOptions($certandkey, $ca_ssl) {
+        $this->certandkey = (string)$certandkey;
+        $this->ca_ssl = (string)$ca_ssl;
+    }
+
+    public function setDigestAlgo($algo) {
+        $algo = strtoupper((string)$algo);
+        switch ($algo) {
+            case 'SHA-384':
+                $this->digestAlgo = 'sha384';
+                $this->digestMethod = 'http://www.w3.org/2001/04/xmldsig-more#sha384';
+                break;
+            case 'SHA-512':
+                $this->digestAlgo = 'sha512';
+                $this->digestMethod = 'http://www.w3.org/2001/04/xmlenc#sha512';
+                break;
+            case 'SHA-256':
+            default:
+                $this->digestAlgo = 'sha256';
+                $this->digestMethod = 'http://www.w3.org/2001/04/xmlenc#sha256';
+        }
+    }
+
+    public function createTimestamp($tmpPDF) {
+        $this->signerSubject = '';
+        $digestValue = hash($this->digestAlgo, $tmpPDF, true);
+
+        $ais = new AllinSigningService($this->customerID, $this->certandkey, $this->ca_ssl);
+        $ais->addRevocationInformation('PADES');
+        
+        $ok = $ais->timestamp($digestValue, $this->digestMethod);
+        if (! $ok) {
+            $error = 'Module_AIS#' . (string)$ais->resultmajor . '::' . (string)$ais->resultminor;
+            $errorMobileID = preg_replace('/^mss:_/', '', $ais->resultmessage);
+            switch ($error) {
+                case 'Module_AIS#HTTP::Could not connect to host':
+                    throw new SetaPDF_Signer_Exception($error, 1);
+                default:
+                    throw new SetaPDF_Signer_Exception($error, -1);
+            }
+        }
+        $this->SignerSubject = $ais->sig_certSubject;
+        return(base64_decode($ais->getLastSignature()));
+    }
+
+    public function getSignerSubject() {
+        return($this->SignerSubject);
     }
 
 }

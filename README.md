@@ -47,6 +47,7 @@ Refer to the SoapClient::SoapClient options on http://www.php.net/manual/en/soap
 
 ## Usage
 
+Static/OnDemand Signatures:
 ````
 // load and register the autoload function
 require_once('library/SetaPDF/Autoload.php');
@@ -56,7 +57,7 @@ require_once("SetaPDF-ais.php");
 $signer->setSignatureContentLength(32000);
 $signer->setAllowSignatureContentLengthChange(false);
 
-// Sign the document with the use of the module
+// Sign the document with the use of the Signature module
 $module = new SetaPDF_Signer_Signature_Module_AIS();
 $module->setCustomerID($ais_customer);
 $module->setSSLOptions(dirname(__FILE__).'/mycertandkey.crt', dirname(__FILE__).'/ais-ca-ssl.crt');
@@ -64,14 +65,58 @@ $module->setSSLOptions(dirname(__FILE__).'/mycertandkey.crt', dirname(__FILE__).
 $signer->sign($module);
 ...
 ````
+Timestamp Signatures:
+````
+// load and register the autoload function
+require_once('library/SetaPDF/Autoload.php');
+require_once("SetaPDF-ais.php");
+...
+// Reserve more space than default
+$signer->setSignatureContentLength(32000);
+$signer->setAllowSignatureContentLengthChange(false);
+
+// Sign the document with the use of the Timestamp module
+$module = new SetaPDF_Signer_Timestamp_Module_AIS();
+$module->setCustomerID($ais_customer);
+$module->setSSLOptions(dirname(__FILE__).'/mycertandkey.crt', dirname(__FILE__).'/ais-ca-ssl.crt');
+
+// Attach the module to the signer and timestamp it
+$signer->setTimestampModule($module);
+$signer->timestamp();
+````
 
 Samples:
 
 * Static Signature [samples/SetaPDF-StaticWithAIS.php](samples/SetaPDF-StaticWithAIS.php)
 * OnDemand Signature [samples/SetaPDF-OnDemandWithAIS.php](samples/SetaPDF-OnDemandWithAIS.php)
+* Timestamp Signature [samples/SetaPDF-TSAWithAIS.php](samples/SetaPDF-TSAWithAIS.php) 
 
 
 
 ## Known issues
 
-A ModuleInterface for the Timestamp Signature is not yet available.
+* Error in Global: No timestamp module passed. with code 0
+
+This error will be fixed by SetaSign in the `SetaPDF/signer.php`. As of today it is checking if the $timestampModule is an instance of `SetaPDF_Signer_Timestamp_Module_Rfc3161`rather than `SetaPDF_Signer_Timestamp_Module_ModuleInterface`. If needed you can manually fix this by changing:
+````
+    protected function _timestamp(
+        SetaPDF_Core_Writer_WriterInterface $mainWriter,
+        $path
+    )
+    {
+        $timestampModule = $this->getTimestampModule();
+        if (!$timestampModule instanceof SetaPDF_Signer_Timestamp_Module_Rfc3161) {
+            throw new InvalidArgumentException('No timestamp module passed.');
+        }
+````
+to:
+````
+...
+        if (!$timestampModule instanceof SetaPDF_Signer_Timestamp_Module_ModuleInterface) {
+            throw new InvalidArgumentException('No timestamp module passed.');
+        }
+````
+
+* LTV support in Timestamp Signature
+
+This is not yet the case and will be added soon.
