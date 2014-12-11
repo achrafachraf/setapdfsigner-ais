@@ -63,7 +63,6 @@ $module->setCustomerID($ais_customer);
 $module->setSSLOptions(dirname(__FILE__).'/mycertandkey.crt', dirname(__FILE__).'/ais-ca-ssl.crt');
 ...
 $signer->sign($module);
-...
 ````
 Timestamp Signatures:
 ````
@@ -95,14 +94,11 @@ Samples:
 
 ## Known issues
 
-* Error in Global: No timestamp module passed. with code 0
+### Error in Global: No timestamp module passed. with code 0
 
 This error will be fixed by SetaSign in the `SetaPDF/signer.php`. As of today it is checking if the $timestampModule is an instance of `SetaPDF_Signer_Timestamp_Module_Rfc3161`rather than `SetaPDF_Signer_Timestamp_Module_ModuleInterface`. If needed you can manually fix this by changing:
 ````
-    protected function _timestamp(
-        SetaPDF_Core_Writer_WriterInterface $mainWriter,
-        $path
-    )
+    protected function _timestamp(SetaPDF_Core_Writer_WriterInterface $mainWriter, $path)
     {
         $timestampModule = $this->getTimestampModule();
         if (!$timestampModule instanceof SetaPDF_Signer_Timestamp_Module_Rfc3161) {
@@ -117,6 +113,6 @@ to:
         }
 ````
 
-* LTV support in Timestamp Signature
+### LTV support in Timestamp Signatures
 
 This is not yet the case and will be added soon.
