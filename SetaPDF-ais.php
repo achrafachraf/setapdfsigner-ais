@@ -71,14 +71,14 @@ class SetaPDF_Signer_Signature_Module_AIS implements SetaPDF_Signer_Signature_Mo
      * setOnDemandOptions - Defines the OnDemand and optional step up values
      * #params     string    Distiuished Name (DN)
      * #params     string    (optional) Mobile ID Number for step up verification
-     * #params     string    (optional) Mobile ID Message that can have $TRANS_ID as placeholder
+     * #params     string    (optional) Mobile ID Message that can have #TRANSID# as placeholder
      * #params     string    (optional) Mobile ID Language
      */
     public function setOnDemandOptions($DN, $msisdn='', $msg='', $lang='') {
         $this->DN = (string)$DN;
         $this->msisdn = (string)$msisdn;
         $this->msg = (string)$msg;
-        $this->msg = str_replace('$TRANS_ID', $this->generateTransactionID(), $this->msg);
+        $this->msg = str_replace('#TRANSID#', $this->generateTransactionID(), $this->msg);
         $this->lang = (string)$lang;
     }
     
@@ -87,7 +87,7 @@ class SetaPDF_Signer_Signature_Module_AIS implements SetaPDF_Signer_Signature_Mo
      * @return string  Transaction ID with a length of 6
      */
     private function generateTransactionID() {
-        $pattern = '1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ+-*%/=!?';
+        $pattern = '1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $maxlen = strlen($pattern) - 1;
         $id = '';
         for ($i = 1; $i <= 6; $i++)
