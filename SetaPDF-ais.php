@@ -71,16 +71,30 @@ class SetaPDF_Signer_Signature_Module_AIS implements SetaPDF_Signer_Signature_Mo
      * setOnDemandOptions - Defines the OnDemand and optional step up values
      * #params     string    Distiuished Name (DN)
      * #params     string    (optional) Mobile ID Number for step up verification
-     * #params     string    (optional) Mobile ID Message
+     * #params     string    (optional) Mobile ID Message that can have $TRANS_ID as placeholder
      * #params     string    (optional) Mobile ID Language
      */
     public function setOnDemandOptions($DN, $msisdn='', $msg='', $lang='') {
         $this->DN = (string)$DN;
         $this->msisdn = (string)$msisdn;
         $this->msg = (string)$msg;
+        $this->msg = str_replace('$TRANS_ID', $this->generateTransactionID(), $this->msg);
         $this->lang = (string)$lang;
     }
     
+    /**
+     * generateTransactionID - Helper function for generating a unique Transaction ID string.
+     * @return string  Transaction ID with a length of 6
+     */
+    private function generateTransactionID() {
+        $pattern = '1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ+-*%/=!?';
+        $maxlen = strlen($pattern) - 1;
+        $id = '';
+        for ($i = 1; $i <= 6; $i++)
+            $id .= $pattern{mt_rand(0, $maxlen)};
+        return $id;
+    }
+
     /**
      * setDigestAlgo - Defines the dighest method to be used (Default is SHA-256)
      * #params     string    Type ('SHA-256', 'SHA-384', 'SHA-512')

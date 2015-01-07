@@ -28,7 +28,8 @@ $signer_reason   = 'I agree to the terms and condidtions in this document';
 // Optional step up
 $approval_no     = '+41791234567';      // Set to empty for no step up authentication
 $approval_lang   = 'en';
-$approval_msg    = 'Do you want to sign ' . $filename_in . ' as ' . $signer_mail . '?';
+$approval_msg    = 'Sign ' . $filename_in . ' as ' . $signer_mail . '?';
+$approval_msg   .= ' ($TRANS_ID)';      // Add unique transaction ID placeholder at the end
 
 // Create a writer and load the file
 $writer = new SetaPDF_Core_Writer_File($filename_out);
