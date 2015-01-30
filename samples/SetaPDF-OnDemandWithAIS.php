@@ -26,10 +26,12 @@ $signer_location = 'Zürich';
 $signer_reason   = 'I agree to the terms and condidtions in this document';
 
 // Optional step up
-$approval_no     = '+41791234567';      // Set to empty for no step up authentication
+$approval_no     = '+41798440457';      // Set to empty for no step up authentication
 $approval_lang   = 'en';
 $approval_msg    = 'Sign ' . $filename_in . ' as ' . $signer_mail . '?';
 $approval_msg   .= ' (#TRANSID#)';      // Add the unique transaction ID placeholder at the end
+// Set the Mobile ID SerialNumber if needed (example: MIDCHEGU8GSH6K83)
+$approval_sn     = '';						
 
 // Create a writer and load the file
 $writer = new SetaPDF_Core_Writer_File($filename_out);
@@ -53,7 +55,7 @@ $module->setSSLOptions(dirname(__FILE__).'/../mycertandkey.crt', dirname(__FILE_
 // Signature type and proper OnDemand options
 $module->setOnDemandOptions($signer_dn);
 if (isset($approval_no) && $approval_no !== '')
-    $module->setOnDemandOptions($signer_dn, $approval_no, $approval_msg, $approval_lang);
+    $module->setOnDemandOptions($signer_dn, $approval_no, $approval_msg, $approval_lang, $approval_sn);
 
 try {
     $signer->sign($module);

@@ -1,6 +1,6 @@
 <?php
 /**
- * @version        1.0.1
+ * @version        1.0.2
  * @package        SetaPDF_Signer_Signature_Module_AIS
  * @copyright      Copyright (C) 2014. All rights reserved.
  * @license        GNU General Public License version 2 or later; see LICENSE.md
@@ -20,10 +20,11 @@ class SetaPDF_Signer_Signature_Module_AIS implements SetaPDF_Signer_Signature_Mo
     private $ais_options;                   // Additional SOAP client options
     private $digestAlgo;                    // Digest algorithm
     private $digestMethod;                  // Digest method URL
-    private $DN;                            // OnDemand options
-    private $msisdn;
-    private $msg;
-    private $lang;
+    private $ondemand_DN;                   // OnDemand options
+    private $ondemand_msisdn;
+    private $ondemand_msg;
+    private $ondemand_lang;
+    private $ondemand_serialNumber;
 
     public $signerSubject;                  // Signer: Subject
     public $signerMIDSN;                    // Signer: SerialNumber of Distinguished Name, if present
@@ -41,10 +42,11 @@ class SetaPDF_Signer_Signature_Module_AIS implements SetaPDF_Signer_Signature_Mo
         $this->setSSLOptions($cert, $cafile);
         $this->ais_options = $myOpts;
         $this->setDigestAlgo('sha256');
-        $this->DN = '';
-        $this->msisdn = '';
-        $this->msg = '';
-        $this->lang = '';
+        $this->ondemand_DN = '';
+        $this->ondemand_msisdn = '';
+        $this->ondemand_msg = '';
+        $this->ondemand_lang = '';
+        $this->ondemand_serialNumber = '';
         $this->signerSubject = '';
         $this->signerMIDSN = '';
     }
@@ -73,13 +75,15 @@ class SetaPDF_Signer_Signature_Module_AIS implements SetaPDF_Signer_Signature_Mo
      * #params     string    (optional) Mobile ID Number for step up verification
      * #params     string    (optional) Mobile ID Message that can have #TRANSID# as placeholder
      * #params     string    (optional) Mobile ID Language
+     * #params     string    (optional) Mobile ID SerialNumber
      */
-    public function setOnDemandOptions($DN, $msisdn='', $msg='', $lang='') {
-        $this->DN = (string)$DN;
-        $this->msisdn = (string)$msisdn;
-        $this->msg = (string)$msg;
-        $this->msg = str_replace('#TRANSID#', $this->generateTransactionID(), $this->msg);
-        $this->lang = (string)$lang;
+    public function setOnDemandOptions($DN, $msisdn='', $msg='', $lang='', $serialNumber='') {
+        $this->ondemand_DN = (string)$DN;
+        $this->ondemand_msisdn = (string)$msisdn;
+        $this->ondemand_msg = (string)$msg;
+        $this->ondemand_msg = str_replace('#TRANSID#', $this->generateTransactionID(), $this->ondemand_msg);
+        $this->ondemand_lang = (string)$lang;
+        $this->ondemand_serialNumber = (string)$serialNumber;
     }
     
     /**
@@ -131,7 +135,7 @@ class SetaPDF_Signer_Signature_Module_AIS implements SetaPDF_Signer_Signature_Mo
         $ais->addRevocationInformation('PADES');
         $ais->addTimeStamp(true);
     
-        $ok = $ais->sign($digestValue, $this->digestMethod, $this->DN, $this->msisdn, $this->msg, $this->lang);
+        $ok = $ais->sign($digestValue, $this->digestMethod, $this->ondemand_DN, $this->ondemand_msisdn, $this->ondemand_msg, $this->ondemand_lang, $this->ondemand_serialNumber);
         if (! $ok) {
             $error = 'Module_AIS#' . (string)$ais->resultmajor . '::' . (string)$ais->resultminor;
             $errorMobileID = preg_replace('/^mss:_/', '', $ais->resultmessage);

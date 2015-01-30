@@ -47,7 +47,7 @@ Refer to the SoapClient::SoapClient options on http://www.php.net/manual/en/soap
 
 ## Usage
 
-Static/OnDemand Signatures:
+Static/OnDemand Certificate CMS Signature:
 ````
 // load and register the autoload function
 require_once('library/SetaPDF/Autoload.php');
@@ -64,7 +64,7 @@ $module->setSSLOptions(dirname(__FILE__).'/mycertandkey.crt', dirname(__FILE__).
 ...
 $signer->sign($module);
 ````
-Timestamp Signatures:
+Trusted Timestamp Signature:
 ````
 // load and register the autoload function
 require_once('library/SetaPDF/Autoload.php');
@@ -86,9 +86,9 @@ $signer->timestamp();
 
 Samples:
 
-* Static Signature [samples/SetaPDF-StaticWithAIS.php](samples/SetaPDF-StaticWithAIS.php)
-* OnDemand Signature [samples/SetaPDF-OnDemandWithAIS.php](samples/SetaPDF-OnDemandWithAIS.php)
-* Timestamp Signature [samples/SetaPDF-TSAWithAIS.php](samples/SetaPDF-TSAWithAIS.php) 
+* Static Certificate CMS Signature [samples/SetaPDF-StaticWithAIS.php](samples/SetaPDF-StaticWithAIS.php)
+* OnDemand Certificate CMS Signature [samples/SetaPDF-OnDemandWithAIS.php](samples/SetaPDF-OnDemandWithAIS.php)
+* Trusted Timestamp Signature [samples/SetaPDF-TSAWithAIS.php](samples/SetaPDF-TSAWithAIS.php) 
 
 
 
