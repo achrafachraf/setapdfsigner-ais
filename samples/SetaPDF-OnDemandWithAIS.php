@@ -26,7 +26,7 @@ $signer_location = 'Zürich';
 $signer_reason   = 'I agree to the terms and condidtions in this document';
 
 // Optional step up
-$approval_no     = '+41798440457';      // Set to empty for no step up authentication
+$approval_no     = '+41791234567';      // Set to empty for no step up authentication
 $approval_lang   = 'en';
 $approval_msg    = 'Sign ' . $filename_in . ' as ' . $signer_mail . '?';
 $approval_msg   .= ' (#TRANSID#)';      // Add the unique transaction ID placeholder at the end
