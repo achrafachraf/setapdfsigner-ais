@@ -144,6 +144,8 @@ class SetaPDF_Signer_Signature_Module_AIS implements SetaPDF_Signer_Signature_Mo
                     throw new SetaPDF_Signer_Exception($error, 1);
                 case 'Module_AIS#http://ais.swisscom.ch/1.0/resultmajor/SubsystemError::http://ais.swisscom.ch/1.0/resultminor/subsystem/MobileID/service':
                     throw new SetaPDF_Signer_Exception('ModuleAIS#MobileID', (integer)$errorMobileID);
+                case 'Module_AIS#http://ais.swisscom.ch/1.0/resultmajor/SubsystemError::http://ais.swisscom.ch/1.0/resultminor/subsystem/MobileID/SerialNumberMismatch':
+                    throw new SetaPDF_Signer_Exception('ModuleAIS#MobileID', 2);
                 default:
                     throw new SetaPDF_Signer_Exception($error, -1);
             }
@@ -233,7 +235,6 @@ class SetaPDF_Signer_Timestamp_Module_AIS implements SetaPDF_Signer_Timestamp_Mo
         $ok = $ais->timestamp($digestValue, $this->digestMethod);
         if (! $ok) {
             $error = 'Module_AIS#' . (string)$ais->resultmajor . '::' . (string)$ais->resultminor;
-            $errorMobileID = preg_replace('/^mss:_/', '', $ais->resultmessage);
             switch ($error) {
                 case 'Module_AIS#HTTP::Could not connect to host':
                     throw new SetaPDF_Signer_Exception($error, 1);
