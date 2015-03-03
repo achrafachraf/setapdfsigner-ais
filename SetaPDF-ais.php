@@ -3,7 +3,7 @@
  * @version        1.0.2
  * @package        SetaPDF_Signer_Signature_Module_AIS
  * @copyright      Copyright (C) 2014. All rights reserved.
- * @license        GNU General Public License version 2 or later; see LICENSE.md
+ * @license        Licensed under the Apache License, Version 2.0 or later; see LICENSE.md
  * @author         Swisscom (Schweiz) AG
  * Requirements    AllinSigningService (ais.php 1.0.0)
  *                 SetaPDF-Signer (Version 2.1.0.x)
